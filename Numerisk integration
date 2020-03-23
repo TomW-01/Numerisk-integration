@@ -1,0 +1,49 @@
+from py_expression_eval import Parser
+import numpy as np
+
+parser = Parser()
+h = 0.1
+
+# Programmet använder sig av py-expression-eval för att evaluera funktioner (och alltså beräkna y-värden)
+# samt numpys linalg.solve för att lösa ekvationssystem
+
+print("Detta program integrerar numeriskt genom att approximera en funktion f(x) "
+      "\ntill ett andragradspolynom g(x) = ax^2 + bx + c och sedan använda trapetsmetoden med steglängd h = 0.1\n")
+print("Skriv in en funktion f(x) och undre samt övre gräns på formen f(x), a, b. Tillåtna operatorer:")
+print("+, -, *, /, % (modulo), ^ (exponent), PI (konstanten π), E (konstanten e), "
+      "sin(x), cos(x), tan(x), asin(x), acos(x), atan(x)")
+print("log(x) (naturliga logaritmen ln(x)), log(x, bas), "
+      "ceil(x), floor(x), round(x), exp(x) (expontentfunktionen e^(x)).\n")
+
+input = input().split(", ")
+f = input[0]
+
+# Hitta 3 punkter att approximera från: gränsvärdena samt 1 punkt mitt emellan dessa
+lower = float(input[1])
+upper = float(input[2])
+middle = (upper + lower) / 2
+
+# För in detta i en numpy-array för att kunna lösa ett ekvationssystem
+a = np.array([[pow(upper, 2), upper, 1], [pow(middle, 2), middle, 1], [pow(lower, 2), lower, 1]])
+
+# Beräkna y-värden för de olika punkterna
+yupper = parser.parse(f).evaluate({'x': upper})
+ymiddle = parser.parse(f).evaluate({'x': middle})
+ylower = parser.parse(f).evaluate({'x': lower})
+
+b = np.array([yupper, ymiddle, ylower])
+
+# Lös ut konstanterna a, b, c för g(x) genom att lösa ett ekvationssystem
+solved = np.linalg.solve(a, b)
+g = str(solved[0]) + "*x^2 + " + str(solved[1]) + "*x + " + str(solved[2])
+print("\nApproximerad funktion: " + g)
+
+# Stega igenom med trapetsmetoden, A = h*(g(x) + g(x+h)) / 2
+result = 0
+for x in np.arange(lower, upper + h, h):
+    g1 = parser.parse(g).evaluate({'x': x})
+    g2 = parser.parse(g).evaluate({'x': x + h})
+    result += (h * (g1 + g2)) / 2
+
+print("Resultat av numerisk integrering: " + str(result))
+
