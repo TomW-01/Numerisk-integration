@@ -35,14 +35,14 @@ b = np.array([y1, y2, y3])
 
 # Lös ut konstanterna a, b, c för g(x) genom att lösa ett ekvationssystem
 solved = np.linalg.solve(a, b)
-g = str(solved[0]) + "*x^2 + " + str(solved[1]) + "*x + " + str(solved[2])
-print("\nApproximerad funktion: " + g)
+p = str(solved[0]) + "*x^2 + " + str(solved[1]) + "*x + " + str(solved[2])
+print("\nApproximerat p(x): " + p)
 
 # Stega igenom med trapetsmetoden, A = h*(g(x) + g(x+h)) / 2
 result = 0
 for x in np.arange(x1, x3 + h, h):
-    g1 = parser.parse(g).evaluate({'x': x})
-    g2 = parser.parse(g).evaluate({'x': x + h})
-    result += (h * (g1 + g2)) / 2
+    p1 = parser.parse(p).evaluate({'x': x})
+    p2 = parser.parse(p).evaluate({'x': x + h})
+    result += (h * (p1 + p2)) / 2
 
 print("Resultat av numerisk integrering: " + str(result))
