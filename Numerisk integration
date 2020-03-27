@@ -40,7 +40,7 @@ print("\nApproximerat p(x): " + p)
 
 # Stega igenom med trapetsmetoden, A = h*(g(x) + g(x+h)) / 2
 result = 0
-for x in np.arange(x1, x3 + h, h):
+for x in np.arange(x1, x3 - h, h):
     p1 = parser.parse(p).evaluate({'x': x})
     p2 = parser.parse(p).evaluate({'x': x + h})
     result += (h * (p1 + p2)) / 2
