@@ -31,7 +31,7 @@ y1 = parser.parse(f).evaluate({'x': x1})
 y2 = parser.parse(f).evaluate({'x': x2})
 y3 = parser.parse(f).evaluate({'x': x3})
 
-b = np.array([y1, y2, y3])
+b = np.array([y3, y2, y1])
 
 # Lös ut konstanterna a, b, c för g(x) genom att lösa ett ekvationssystem
 solved = np.linalg.solve(a, b)
