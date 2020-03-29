@@ -16,33 +16,46 @@ print("log(x) (naturliga logaritmen ln(x)), log(x, bas), "
       "ceil(x), floor(x), round(x), exp(x) (expontentfunktionen e^(x)).\n")
 
 input = input().split(", ")
+
+# Integranden
 f = input[0]
 
-# Hitta 3 punkter att approximera från: gränsvärdena samt 1 punkt mitt emellan dessa
-x1 = float(input[1]) # lägsta
-x3 = float(input[2]) # högsta
-x2 = (x3 + x1) / 2 # mellersta
+# Integrandens undre och övre gräns
+n = float(input[1])
+m = float(input[2])
 
-# För in detta i en numpy-array för att kunna lösa ett ekvationssystem
-a = np.array([[pow(x1, 2), x1, 1], [pow(x2, 2), x2, 1], [pow(x3, 2), x3, 1]])
-
-# Beräkna y-värden för de olika punkterna
-y1 = parser.parse(f).evaluate({'x': x1})
-y2 = parser.parse(f).evaluate({'x': x2})
-y3 = parser.parse(f).evaluate({'x': x3})
-
-b = np.array([y1, y2, y3])
-
-# Lös ut konstanterna a, b, c för g(x) genom att lösa ett ekvationssystem
-solved = np.linalg.solve(a, b)
-p = str(solved[0]) + "*x^2 + " + str(solved[1]) + "*x + " + str(solved[2])
-print("\nApproximerat p(x): " + p)
-
-# Stega igenom med trapetsmetoden, A = h*(g(x) + g(x+h)) / 2
 result = 0
-for x in np.arange(x1, x3 - h, h):
-    p1 = parser.parse(p).evaluate({'x': x})
-    p2 = parser.parse(p).evaluate({'x': x + h})
-    result += (h * (p1 + p2)) / 2
+for x in np.arange(n, m, h):
+    # De tre x-värdena för koefficientmatrisen
+    x1 = x
+    x2 = x + (h / 2)
+    x3 = x + h
+
+    coefficients = np.array([[pow(x1, 2), x1, 1], [pow(x2, 2), x2, 1], [pow(x3, 2), x3, 1]])
+
+    # De tre y-värdena för konstantmatrisen:
+    y1 = parser.parse(f).evaluate({'x': x1})
+    y2 = parser.parse(f).evaluate({'x': x2})
+    y3 = parser.parse(f).evaluate({'x': x3})
+
+    constants = np.array([y1, y2, y3])
+
+    # De utlösa variablerna a, b och c
+    variables = np.linalg.solve(coefficients, constants)
+
+    a = variables[0]
+    b = variables[1]
+    c = variables[2]
+
+    # Den primitiva funktionen till ett andragradspolynom p(x) = ax^2 + bx + c
+    P = "(a/3)*x^3 + (b/2)*x^2 + c*x"
+
+    # Integralen för p(x) mellan x1 och x3
+    P1 = parser.parse(P).evaluate({'x': x1, 'a': a, 'b': b, 'c': c})
+    P2 = parser.parse(P).evaluate({"x": x3, "a": a, "b": b, "c": c})
+    integral = P2 - P1
+
+    result += integral
 
 print("Resultat av numerisk integrering: " + str(result))
+
